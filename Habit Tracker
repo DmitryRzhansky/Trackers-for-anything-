@@ -1,0 +1,119 @@
+import json
+from datetime import datetime
+
+
+# File operations
+def load_data():
+    try:
+        with open('habits.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def save_data(data):
+    with open('habits.json', 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+# Core functions
+def add_habit(data):
+    name = input("Enter habit name: ").strip().title()
+    if not name:
+        print("Name cannot be empty!")
+        return
+
+    if name not in data:
+        data[name] = {"streak": 0, "max_streak": 0, "history": []}
+        print(f"Habit '{name}' added successfully!")
+    else:
+        print("Habit already exists!")
+
+
+def track_habit(data):
+    if not data:
+        print("No habits to track. Add some first!")
+        return
+
+    print("\nYour habits:")
+    for i, habit in enumerate(data.keys(), 1):
+        print(f"{i}. {habit}")
+
+    try:
+        choice = int(input("Select habit number: ")) - 1
+        habit = list(data.keys())[choice]
+    except (ValueError, IndexError):
+        print("Invalid selection!")
+        return
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    if data[habit]["history"] and data[habit]["history"][-1]["date"] == today:
+        print("Already tracked today!")
+        return
+
+    status = input(f"Did you complete '{habit}' today? (y/n): ").lower() == 'y'
+
+    # Update streak
+    if status:
+        data[habit]["streak"] += 1
+        if data[habit]["streak"] > data[habit]["max_streak"]:
+            data[habit]["max_streak"] = data[habit]["streak"]
+    else:
+        data[habit]["streak"] = 0
+
+    data[habit]["history"].append({
+        "date": today,
+        "completed": status
+    })
+    print("Progress saved!")
+
+
+def show_stats(data):
+    if not data:
+        print("No habits to show. Add some first!")
+        return
+
+    print("\n=== YOUR HABIT STATS ===")
+    for habit, details in data.items():
+        completed = sum(1 for day in details["history"] if day["completed"])
+        total = len(details["history"])
+
+        print(f"\n🔹 {habit}:")
+        print(f"   ✅ Completed: {completed}/{total} days ({completed / total * 100:.0f}%)")
+        print(f"   🔥 Current streak: {details['streak']} days")
+        print(f"   🏆 Best streak: {details['max_streak']} days")
+
+        # Last 5 entries
+        recent = details["history"][-5:] if len(details["history"]) > 5 else details["history"]
+        print("   📅 Recent:", " ".join("✓" if day["completed"] else "✗" for day in recent))
+
+
+# Main menu
+def main():
+    data = load_data()
+
+    while True:
+        print("\n=== HABIT TRACKER ===")
+        print("1. Add new habit")
+        print("2. Track habit")
+        print("3. View stats")
+        print("4. Exit")
+
+        choice = input("Choose an option (1-4): ")
+
+        if choice == '1':
+            add_habit(data)
+        elif choice == '2':
+            track_habit(data)
+        elif choice == '3':
+            show_stats(data)
+        elif choice == '4':
+            save_data(data)
+            print("Data saved. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+
+if __name__ == "__main__":
+    main()
