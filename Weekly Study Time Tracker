@@ -1,0 +1,65 @@
+print("\n=== Weekly Study Time Tracker ===\n")
+
+days = {
+    "Monday": 0,
+    "Tuesday": 0,
+    "Wednesday": 0,
+    "Thursday": 0,
+    "Friday": 0,
+    "Saturday": 0,
+    "Sunday": 0,
+}
+
+while True:
+    try:
+        goal = int(input("Enter your weekly study goal (hours): "))
+        if goal < 0:
+            print("Hours can't be negative!\n")
+            continue
+        break
+    except ValueError:
+        print("Please enter a valid number!\n")
+
+print("\nEnter time spent for each day (in hours):")
+for day in days:
+    while True:
+        try:
+            time = float(input(f"{day}: "))
+            if time < 0:
+                print("Time can't be negative!")
+                continue
+            days[day] = time
+            break
+        except ValueError:
+            print("Please enter a valid number!")
+
+# Calculate statistics
+total_hours = sum(days.values())
+goal_diff = total_hours - goal
+progress = min(100, (total_hours / goal) * 100) if goal > 0 else 0
+most_productive = max(days, key=days.get)
+least_productive = min(days, key=days.get)
+
+print("\n" + "="*30)
+print("=== Your Weekly Study Report ===")
+print("="*30)
+
+# Print daily stats with emojis
+print("\n📅 Daily Study Time:")
+for day, hours in days.items():
+    emoji = "🔥" if hours >= 4 else "✅" if hours >= 2 else "⚠️" if hours > 0 else "❌"
+    print(f"{emoji} {day:<10}: {hours:>4.1f} hours")
+
+# Print summary
+print("\n📊 Weekly Summary:")
+print(f"✅ Total hours: {total_hours:.1f} / {goal}")
+print(f"📈 Progress: {progress:.1f}% of your goal")
+print(f"📉 Difference: {abs(goal_diff):.1f} hours {'over' if goal_diff > 0 else 'under'} goal")
+print(f"🏆 Most productive day: {most_productive} ({days[most_productive]:.1f} hours)")
+print(f"😴 Least productive day: {least_productive} ({days[least_productive]:.1f} hours)")
+
+# Additional visualization
+print("\n📝 Weekly Overview:")
+for day, hours in days.items():
+    bar = '█' * int(hours)
+    print(f"{day[:3]:<4} | {bar:<20} {hours:.1f}h")
