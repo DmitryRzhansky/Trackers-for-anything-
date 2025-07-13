@@ -15,5 +15,4 @@ Each script solves a specific life-tracking task with minimal dependencies.
 ---
 
 ## 📅 Coming Soon:
-- Habit Tracker
 - Water Intake Logger
