@@ -12,6 +12,5 @@ Each script solves a specific life-tracking task with minimal dependencies.
 ---
 
 ## 📅 Coming Soon:
-- Weekly Study Time Tracker
 - Habit Tracker
 - Water Intake Logger
